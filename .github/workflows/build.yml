@@ -13,7 +13,7 @@ jobs:
         uses: mymindstorm/setup-emsdk@v7
         with:
           version: latest
-          actions-cache-folder: ~/emsdk-cache
+          no-cache: true
       - name: Install dependencies
         run: npm install -g terser
       - name: Build wasm-aes
