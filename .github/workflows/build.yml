@@ -1,0 +1,44 @@
+on:
+  workflow_dispatch:
+  # push:
+  #   branches:
+  #     - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 15
+          architecture: x64
+          check-latest: true
+      - name: Setup Emscripten
+        uses: mymindstorm/setup-emsdk@v7
+        with:
+          version: latest
+          actions-cache-folder: ~/emsdk-cache
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.npm
+            ~/emsdk-cache
+          key: ${{ runner.os }}-wasm-aes
+      - name: Install dependencies
+        run: npm install -g terser
+      - name: Build wasm-aes
+        run: node build.js
+      - name: Test
+        run: |
+          curl https://cdn.jsdelivr.net/npm/aes-js@3/index.min.js --output aes-js.min.js
+          node test.js
+      - name: Benchmark
+        run: node benchmark.js
+      - name: Upload result
+        uses: actions/upload-artifact@v2
+        with:
+          name: wasm-aes
+          path: dist/
