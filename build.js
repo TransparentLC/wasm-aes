@@ -17,7 +17,7 @@ for (const [AES_MODE, AES_KEYLEN, AES_KEYEXPSIZE] of [
             'aes.c',
             '-O3',
             '-v',
-            '-s', 'SIDE_MODULE=1',
+            '-s', 'SIDE_MODULE=2',
             '-D', `AES${AES_MODE}=1`,
             '-o', `dist/aes${AES_MODE}.wasm`,
         ],

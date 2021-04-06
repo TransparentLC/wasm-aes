@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <emscripten/emscripten.h>
 
 // #define the macros below to 1/0 to enable/disable the mode of operation.
 // The #ifndef-guard allows it to be configured before #include'ing or at compile time.
@@ -58,32 +59,43 @@ struct AES_ctx
 #endif
 };
 
+EMSCRIPTEN_KEEPALIVE
 void AES_init_ctx(struct AES_ctx* ctx, const uint8_t* key);
 #if (defined(CBC) && (CBC == 1)) || (defined(CFB) && (CFB == 1)) || (defined(OFB) && (OFB == 1)) || (defined(CTR) && (CTR == 1))
+EMSCRIPTEN_KEEPALIVE
 void AES_init_ctx_iv(struct AES_ctx* ctx, const uint8_t* key, const uint8_t* iv);
+EMSCRIPTEN_KEEPALIVE
 void AES_ctx_set_iv(struct AES_ctx* ctx, const uint8_t* iv);
 #endif
 
 #if defined(ECB) && (ECB == 1)
+EMSCRIPTEN_KEEPALIVE
 void AES_ECB_encrypt(const struct AES_ctx* ctx, uint8_t* buf);
+EMSCRIPTEN_KEEPALIVE
 void AES_ECB_decrypt(const struct AES_ctx* ctx, uint8_t* buf);
 #endif // #if defined(ECB) && (ECB == !)
 
 #if defined(CBC) && (CBC == 1)
+EMSCRIPTEN_KEEPALIVE
 void AES_CBC_encrypt_buffer(struct AES_ctx* ctx, uint8_t* buf, size_t length);
+EMSCRIPTEN_KEEPALIVE
 void AES_CBC_decrypt_buffer(struct AES_ctx* ctx, uint8_t* buf, size_t length);
 #endif // #if defined(CBC) && (CBC == 1)
 
 #if defined(CFB) && (CFB == 1)
+EMSCRIPTEN_KEEPALIVE
 void AES_CFB_encrypt_buffer(struct AES_ctx* ctx, uint8_t* buf, size_t length);
+EMSCRIPTEN_KEEPALIVE
 void AES_CFB_decrypt_buffer(struct AES_ctx* ctx, uint8_t* buf, size_t length);
 #endif // #if defined(CFB) && (CFB == 1)
 
 #if defined(OFB) && (OFB == 1)
+EMSCRIPTEN_KEEPALIVE
 void AES_OFB_xcrypt_buffer(struct AES_ctx* ctx, uint8_t* buf, size_t length);
 #endif // #if defined(OFB) && (OFB == 1)
 
 #if defined(CTR) && (CTR == 1)
+EMSCRIPTEN_KEEPALIVE
 void AES_CTR_xcrypt_buffer(struct AES_ctx* ctx, uint8_t* buf, size_t length);
 #endif // #if defined(CTR) && (CTR == 1)
 
