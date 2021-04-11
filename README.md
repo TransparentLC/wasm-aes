@@ -95,10 +95,11 @@ node build.js
 
 ## 测试
 
-以 aes-js 作为参考，随机生成数据进行加密和解密，检查运行结果是否相同。
+以 aes-js 和 CryptoJS 作为参考，随机生成数据进行加密和解密，检查运行结果是否相同。
 
 ```bash
 curl https://cdn.jsdelivr.net/npm/aes-js@3/index.min.js --output aes-js.min.js
+curl https://cdn.jsdelivr.net/npm/crypto-js@3/crypto-js.min.js --output crypto-js.min.js
 node test.js
 ```
 
