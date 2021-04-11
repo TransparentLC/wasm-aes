@@ -23,6 +23,7 @@ jobs:
       - name: Test
         run: |
           curl https://cdn.jsdelivr.net/npm/aes-js@3/index.min.js --output aes-js.min.js
+          curl https://cdn.jsdelivr.net/npm/crypto-js@3/crypto-js.min.js --output crypto-js.min.js
           node test.js
       - name: Benchmark
         run: node benchmark.js
