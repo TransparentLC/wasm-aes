@@ -54,18 +54,18 @@ const utf8Encoder = new TextEncoder('utf-8');
 const utf8Decoder = new TextDecoder('utf-8');
 const cryptFunctionName = {
     [$operationEncrypt]: {
-        [$modeECB]: 'AES_ECB_encrypt',
-        [$modeCBC]: 'AES_CBC_encrypt_buffer',
-        [$modeCFB]: 'AES_CFB_encrypt_buffer',
-        [$modeOFB]: 'AES_OFB_xcrypt_buffer',
-        [$modeCTR]: 'AES_CTR_xcrypt_buffer',
+        [$modeECB]: '$$AES_ECB_encrypt$$',
+        [$modeCBC]: '$$AES_CBC_encrypt_buffer$$',
+        [$modeCFB]: '$$AES_CFB_encrypt_buffer$$',
+        [$modeOFB]: '$$AES_OFB_xcrypt_buffer$$',
+        [$modeCTR]: '$$AES_CTR_xcrypt_buffer$$',
     },
     [$operationDecrypt]: {
-        [$modeECB]: 'AES_ECB_decrypt',
-        [$modeCBC]: 'AES_CBC_decrypt_buffer',
-        [$modeCFB]: 'AES_CFB_decrypt_buffer',
-        [$modeOFB]: 'AES_OFB_xcrypt_buffer',
-        [$modeCTR]: 'AES_CTR_xcrypt_buffer',
+        [$modeECB]: '$$AES_ECB_decrypt$$',
+        [$modeCBC]: '$$AES_CBC_decrypt_buffer$$',
+        [$modeCFB]: '$$AES_CFB_decrypt_buffer$$',
+        [$modeOFB]: '$$AES_OFB_xcrypt_buffer$$',
+        [$modeCTR]: '$$AES_CTR_xcrypt_buffer$$',
     },
 };
 /**
@@ -226,7 +226,7 @@ class AES {
         const exports = this[$instance].exports;
         const cryptFunction = exports[cryptFunctionName[operation][mode]];
         initContext(
-            mode === $modeECB ? exports.AES_init_ctx : exports.AES_init_ctx_iv,
+            mode === $modeECB ? exports.$$AES_init_ctx$$ : exports.$$AES_init_ctx_iv$$,
             this[$heapU8],
             key,
             iv
