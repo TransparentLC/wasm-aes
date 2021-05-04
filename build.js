@@ -16,7 +16,7 @@ for (const [AES_MODE, AES_KEYLEN, AES_KEYEXPSIZE] of [
         $$AES_MODE$$: AES_MODE,
         $$AES_KEYLEN$$: AES_KEYLEN,
         $$AES_KEYEXPSIZE$$: AES_KEYEXPSIZE,
-        $$WASM_BASE64$$: '$$WASM_BASE64$$',
+        $$WASM_BASE64$$: null,
     });
     for (const f of [
         'aes.c',

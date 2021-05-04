@@ -88,10 +88,12 @@ class ReplacementCollector {
      */
     applyReplace(str) {
         for (const [key, value] of this.mapping[Symbol.iterator]()) {
-            str = str.replace(
-                new RegExp(key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'),
-                value
-            );
+            if (value !== null) {
+                str = str.replace(
+                    new RegExp(key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'),
+                    value
+                );
+            }
         }
         return str;
     }
