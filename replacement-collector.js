@@ -91,7 +91,7 @@ class ReplacementCollector {
             if (value !== null) {
                 str = str.replace(
                     new RegExp(key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'),
-                    value
+                    value.toString().replace(/\$/g, '$$$$')
                 );
             }
         }

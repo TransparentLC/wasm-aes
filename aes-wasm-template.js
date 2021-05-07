@@ -47,9 +47,6 @@ const $iv = Symbol();
 const $instance = Symbol();
 const $heapU8 = Symbol();
 
-const wasmModuleBase64 = '$$WASM_BASE64$$';
-/** @type {WebAssembly.Module} */
-let cachedModule = null;
 const utf8Encoder = new TextEncoder('utf-8');
 const utf8Decoder = new TextDecoder('utf-8');
 const cryptFunctionName = {
@@ -83,6 +80,7 @@ const initContext = (initFunction, heapU8, key, iv) => {
         OFFSET_AES_CTX + AES_KEYEXPSIZE
     );
 };
+
 const utils = {
     /**
      * @param {Uint8Array} data
@@ -158,6 +156,17 @@ const utils = {
     pkcs7Strip: data => data.slice(0, data.length - data[data.length - 1]),
 };
 
+/** @type {WebAssembly.Module} */
+let cachedModule;
+const wasmBinary = utils.base64ToBytes('$$WASM_BASE64$$');
+try {
+    // throw new Error('Forcely use async loading!');
+    cachedModule = new WebAssembly.Module(wasmBinary);
+} catch (error) {
+    WebAssembly.compile(wasmBinary)
+        .then(module => cachedModule = module);
+}
+
 class AES {
     static MODE_ECB = $modeECB;
     static MODE_CBC = $modeCBC;
@@ -177,26 +186,19 @@ class AES {
             initial: 1,
         });
         this[$heapU8] = new Uint8Array(memory.buffer);
-
-        if (!cachedModule) {
-            cachedModule = new WebAssembly.Module(utils.base64ToBytes(wasmModuleBase64));
-        }
-        this[$instance] = new WebAssembly.Instance(
-            cachedModule,
-            {
-                env: {
-                    memory: memory,
-                    __memory_base: 0x0000,
-                    __stack_pointer: new WebAssembly.Global(
-                        {
-                            mutable: true,
-                            value: 'i32',
-                        },
-                        0x0DFF
-                    ),
-                },
-            }
-        );
+        this[$instance] = new WebAssembly.Instance(cachedModule, {
+            env: {
+                memory: memory,
+                __memory_base: 0x0000,
+                __stack_pointer: new WebAssembly.Global(
+                    {
+                        mutable: true,
+                        value: 'i32',
+                    },
+                    0x0DFF
+                ),
+            },
+        });
     }
 
     /**
