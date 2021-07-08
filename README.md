@@ -22,6 +22,11 @@ if (typeof atob === 'undefined') {
 // 在浏览器中加载时，名称为AES128/AES192/AES256
 const AES = require('./dist/aes128-wasm.min.js');
 
+(async () => {
+
+// 等待模块异步加载完成
+await AES.ready;
+
 // key长度固定为16/24/32
 const key = new Uint8Array([0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7]);
 // iv长度固定为16
@@ -63,6 +68,8 @@ console.log(decryptedString);
 // This is a secret message!
 console.log(plaintextString === decryptedString);
 // true
+
+})()
 ```
 
 ### 工具函数

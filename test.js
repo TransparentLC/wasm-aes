@@ -12,7 +12,6 @@ const AES128 = require('./dist/aes128-wasm.min.js');
 const AES192 = require('./dist/aes192-wasm.min.js');
 const AES256 = require('./dist/aes256-wasm.min.js');
 
-
 CryptoJS.enc.Uint8 = {
     stringify: wordArray => {
         const words = wordArray.words;
@@ -49,12 +48,14 @@ const arrayEqual = (a, b) => {
     return true;
 };
 
-setTimeout(() => {
+(async () => {
     for (const [AES_MODE, AES] of [
         [128, AES128],
         [192, AES192],
         [256, AES256],
     ]) {
+        await AES.ready;
+
         console.log(`Testing AES${AES_MODE}`);
 
         console.log('Running PKCS7 tests');
@@ -130,4 +131,4 @@ setTimeout(() => {
             }
         }
     }
-}, 10);
+})();

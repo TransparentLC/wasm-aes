@@ -2,7 +2,9 @@ const childProcess = require('child_process');
 const fs = require('fs');
 const ReplacementCollector = require('./replacement-collector.js');
 
-fs.rmdirSync('dist', { recursive: true });
+if (fs.existsSync('dist')) {
+    fs.rmSync('dist', { recursive: true });
+}
 fs.mkdirSync('dist');
 
 for (const [AES_MODE, AES_KEYLEN, AES_KEYEXPSIZE] of [
@@ -19,52 +21,58 @@ for (const [AES_MODE, AES_KEYLEN, AES_KEYEXPSIZE] of [
         $$WASM_BASE64$$: null,
     });
     for (const f of [
-        'aes.c',
-        'aes.h',
+        'src/aes.c',
+        'src/aes.h',
         'aes-wasm-template.js',
     ]) {
         rc.collect(fs.readFileSync(f, { encoding: 'utf-8' }));
     }
 
     fs.writeFileSync(
-        `aes-${uniqueId}.h`,
-        rc.applyReplace(fs.readFileSync('aes.h', { encoding: 'utf-8' }))
+        `src/aes-${uniqueId}.h`,
+        rc.applyReplace(fs.readFileSync('src/aes.h', { encoding: 'utf-8' }))
     );
     fs.writeFileSync(
-        `aes-${uniqueId}.c`,
-        rc.applyReplace(fs.readFileSync('aes.c', { encoding: 'utf-8' }))
+        `src/aes-${uniqueId}.c`,
+        rc.applyReplace(fs.readFileSync('src/aes.c', { encoding: 'utf-8' }))
     );
-    const emscriptenProcess = childProcess.spawnSync(
+    childProcess.spawnSync(
         'emcc',
         [
-            `aes-${uniqueId}.c`,
+            `src/aes-${uniqueId}.c`,
             '-O3',
             '-v',
             '-s', 'SIDE_MODULE=2',
             '-D', `AES${AES_MODE}=1`,
             '-o', `dist/aes${AES_MODE}.wasm`,
         ],
+        {
+            stdio: ['ignore', 1, 2],
+        }
     );
-    console.log(emscriptenProcess.output.toString());
-    fs.unlinkSync(`aes-${uniqueId}.h`);
-    fs.unlinkSync(`aes-${uniqueId}.c`);
+    fs.unlinkSync(`src/aes-${uniqueId}.h`);
+    fs.unlinkSync(`src/aes-${uniqueId}.c`);
     rc.mapping.set('$$WASM_BASE64$$', fs.readFileSync(`dist/aes${AES_MODE}.wasm`, { encoding: 'base64' }));
 
     fs.writeFileSync(
         `dist/aes${AES_MODE}-wasm.js`,
         rc.applyReplace(fs.readFileSync('aes-wasm-template.js', { encoding: 'utf-8' }))
     );
-    const terserProcess = childProcess.spawnSync(
+    fs.copyFileSync('aes-wasm-template.d.ts', `dist/aes${AES_MODE}-wasm.d.ts`);
+    childProcess.spawnSync(
         'terser',
         [
             '--ecma', '2020',
-            '--compress', 'unsafe_math,unsafe_methods,unsafe_proto,unsafe_regexp,unsafe_undefined',
+            '--compress', 'unsafe_math,unsafe_methods,unsafe_proto,unsafe_regexp,unsafe_undefined,passes=2',
             '--mangle',
+            '--mangle-props', 'keep_quoted',
             '--comments', 'false',
-            '--source-map', `url="aes${AES_MODE}-wasm.min.js.map"`,
             '--output', `dist/aes${AES_MODE}-wasm.min.js`,
             `dist/aes${AES_MODE}-wasm.js`,
         ],
+        {
+            stdio: ['ignore', 1, 2],
+        }
     );
-    console.log(terserProcess.output.toString());
+    fs.copyFileSync('aes-wasm-template.d.ts', `dist/aes${AES_MODE}-wasm.min.d.ts`);
 }

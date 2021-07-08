@@ -1,10 +1,13 @@
 name: build
 
 on:
-  workflow_dispatch:
   push:
     branches:
       - master
+  workflow_dispatch:
+    inputs:
+      release:
+        description: Input something to release an automated build
 
 jobs:
   build:
@@ -26,9 +29,30 @@ jobs:
           curl https://cdn.jsdelivr.net/npm/crypto-js@3/crypto-js.min.js --output crypto-js.min.js
           node test.js
       - name: Benchmark
+        if: ${{ !github.event.inputs.release }}
         run: node benchmark.js
       - name: Upload result
+        if: ${{ !github.event.inputs.release }}
         uses: actions/upload-artifact@v2
         with:
           name: wasm-aes
           path: dist/
+      - name: Release automated build
+        if: ${{ github.event.inputs.release }}
+        run: |
+          export BUILD_TIME=$(date +%Y%m%d-%H%I%S)
+          echo "release_name=Automated build $BUILD_TIME" >> $GITHUB_ENV
+          echo "tag_name=autobuild-$BUILD_TIME" >> $GITHUB_ENV
+          echo "file_name=autobuild-$BUILD_TIME.zip" >> $GITHUB_ENV
+          cd dist
+          zip -9 -r "../autobuild-$BUILD_TIME.zip" .
+          cd ..
+      - uses: softprops/action-gh-release@v1
+        if: ${{ github.event.inputs.release }}
+        with:
+          name: ${{ env.release_name }}
+          tag_name: ${{ env.tag_name }}
+          prerelease: true
+          files: ${{ env.file_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -50,7 +50,7 @@ const arrayEqual = (a, b) => {
     return true;
 };
 
-setTimeout(() => {
+(async () => {
     const result = [];
     for (const [AES_MODE, AES] of [
         [128, AES128],
@@ -64,6 +64,8 @@ setTimeout(() => {
             ['OFB', AES.MODE_OFB, aesjs.ModeOfOperation.ofb, CryptoJS.mode.OFB],
             ['CTR', AES.MODE_CTR, aesjs.ModeOfOperation.ctr, CryptoJS.mode.CTR],
         ]) {
+            await AES.ready;
+
             const name = `AES${AES_MODE} ${mode}`;
             console.log(`Benchmarking ${name}`);
 
@@ -121,4 +123,4 @@ setTimeout(() => {
         }
     }
     console.table(result);
-}, 10);
+})();
