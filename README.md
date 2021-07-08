@@ -2,7 +2,7 @@
 
 [![build](https://github.com/TransparentLC/wasm-aes/actions/workflows/build.yml/badge.svg)](https://github.com/TransparentLC/wasm-aes/actions/workflows/build.yml)
 
-使用 WASM 运行的 AES 算法，预编译版可在 [Actions](https://github.com/TransparentLC/wasm-aes/actions/workflows/build.yml) 或 [nightly.link](https://nightly.link/TransparentLC/wasm-aes/workflows/build/master/wasm-aes) 下载。
+使用 WASM 运行的 AES 算法，预编译版可在 [Actions](https://github.com/TransparentLC/wasm-aes/actions/workflows/build.yml) 或 [Releases](https://github.com/TransparentLC/wasm-aes/releases) 下载。
 
 AES 的实现来自 [tiny-AES-C](https://github.com/kokke/tiny-AES-C)，原版提供了 ECB、CBC、CTR 三种模式，CFB、OFB 模式是我自己加上的。各模式的加密和解密结果和 [aes-js](https://github.com/ricmoo/aes-js) 及 [CryptoJS](https://github.com/brix/crypto-js) 相同。
 
